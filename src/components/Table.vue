@@ -1,10 +1,10 @@
 <template>
     <div id="table-container">
         <div id="table">
-            <Card v-if="playedCards.cardSlot1 != ''" :card="playedCards[cardSlot1]" id="card-slot-1"/>
-            <Card v-if="playedCards.cardSlot2 != ''" :card="playedCards[cardSlot2]" id="card-slot-2"/>
-            <Card v-if="playedCards.cardSlot3 != ''" :card="playedCards[cardSlot3]" id="card-slot-3"/>
-            <Card v-if="playedCards.cardSlot4 != ''" :card="playedCards[cardSlot4]" id="card-slot-4"/>
+            <Card v-if="playedCards['cardSlot1'] != ''" :card="playedCards['cardSlot1']" id="card-slot-1"/>
+            <Card v-if="playedCards['cardSlot2'] != ''" :card="playedCards['cardSlot2']" id="card-slot-2"/>
+            <Card v-if="playedCards['cardSlot3'] != ''" :card="playedCards['cardSlot3']" id="card-slot-3"/>
+            <Card v-if="playedCards['cardSlot4'] != ''" :card="playedCards['cardSlot4']" id="card-slot-4"/>
         </div>
     </div>
 </template>
@@ -63,7 +63,7 @@ export default {
     min-width: 480px;
     max-width: 1200px;
     min-height: 400px;
-    max-height: 1000px;
+    max-height: 415px;
     border-radius: 120px;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;

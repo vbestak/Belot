@@ -55,7 +55,7 @@ export default {
 
 <style scoped>
 .player-hand-slot{
-    width: 575px;
+    width: fit-content;
 }
 #score-slot{
     grid-area: score;
@@ -70,14 +70,12 @@ export default {
 }
 #player-4{
     grid-area: player-4;
-    justify-self: end;
 }
 #player-3{
     grid-area: player-3;
 }
 #player-2{
     grid-area: player-2;
-    justify-self: start;
 }
 #player-1{
     grid-area: player-1;
@@ -92,7 +90,7 @@ export default {
 #game-container{
     display: grid;
     grid-template-rows: 1fr 4fr 1.5fr;
-    grid-template-columns: 1fr 1fr 2fr 1fr 1fr;
+    grid-template-columns: 1fr 120px 1fr 120px 1fr;
     grid-template-areas: 
     ". . player-3 score ."
     ". player-4 table player-2 ."

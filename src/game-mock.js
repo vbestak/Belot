@@ -1,11 +1,14 @@
 export default {
     id: 1,
     cardSlots: {
-        cardSlot1: "",
-        cardSlot2: "",
+        cardSlot1: "hkralj",
+        cardSlot2: "tas",
         cardSlot3: "",
         cardSlot4: ""
     },
-    playerCards: ["KD", "K10", "P10", "T10", "H10"],
+    playerCards: ['hkralj', 'tas',
+    'ksedam', 'tdeset',
+    'pbaba',  'kosam',
+    'hosam'],
     trump: "C"
 }

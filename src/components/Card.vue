@@ -1,7 +1,7 @@
 <template>
     <div id="card-container">
         <div id="card">
-             {{ card }}
+            <img :src="'assets/'+card+'.png'" alt="card">
         </div>
     </div>
 </template>
@@ -23,13 +23,15 @@ export default {
     align-content: center;
     justify-content: center;
     width: 100%;
+}
+
+#card > img{
+    width: 100%;
     height: 100%;
-    padding: 6px;
 }
 
 #card{
-    background-color: red;
-    width: 60px;
-    height: 90px;
+    width: 72px;
+    height: 110px;
 }
 </style>
