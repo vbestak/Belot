@@ -62,12 +62,12 @@ export default {
     height: 100%;
     min-width: 480px;
     max-width: 1200px;
-    min-height: 400px;
-    max-height: 415px;
+    min-height: 440px;
+    max-height: 480px;
     border-radius: 120px;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 72px 180px 72px 1fr;
+    grid-template-rows: 1fr 115px 115px 115px 1fr;
     grid-template-areas: 
     ". . . . ."
     ". . card-slot-3 . ."

@@ -1,7 +1,7 @@
 <template>
     <div id="hand-container">
-        <div v-for="n in 8" :key="n">
-            <Card :style="{'visibility': showCard(n-1)? 'visible': 'hidden'}" v-hidden="showCard(n-1)" :card="cards[n-1]"/>
+        <div v-for="n in 8" :key="n" @click="playCard(cards[n-1])">
+            <Card  :style="{'visibility': showCard(n-1)? 'visible': 'hidden'}" :card="cards[n-1]"/>
         </div>
     </div>
 </template>

@@ -27,51 +27,106 @@ let players = [];
 let game, deck;
 game = gameI;
 let allClients = [];
+const connectionsLimit = 4;
 
 io.on('connect', function (socket) {
     console.log("Connected succesfully to the socket ...");
-    allClients.push(socket);
 
-    players.push(new playerI(socket.id, players.length));
-
-    if(players.length == 4){
-        deck = new deckI();
-        console.log(deck);
-        players.forEach( (player, index) => {
-            player.hand = deck.deck.slice(0*index, 0*index + 8);
-        });
-
-        console.log(players);
-        allClients.forEach( client => {
-            client.emit("game", sendGameToPlayers(client))
-        });
+    if (io.engine.clientsCount > connectionsLimit) {
+        socket.emit('err', {
+            message: 'reach the limit of connections'
+        })
+        socket.disconnect()
+        console.log('Disconnected...')
+        return
     }
 
-    socket.on('amejzing', function(data) {
-        allClients.forEach( client => {
-            client.emit("game", sendGameToPlayers(client))
-        });
-        console.log("wooooow");
-    })
+    allClients.push(socket);
+    players.push(new playerI(socket.id, "Anonymous", players.length));
 
-    socket.on('disconnect', function() {
+    if (players.length == 4) startGame();
+
+    socket.on('playCard', (data)=>{playCard(socket, data)});
+
+    socket.on('disconnect', function () {
         console.log('Got disconnect!');
-  
+
         var i = allClients.indexOf(socket);
         allClients.splice(i, 1);
 
-        i = players.map( player => player.id).indexOf(socket.playerId);
+        i = players.map(player => player.id).indexOf(socket.playerId);
         players.splice(i, 1);
-     });
+    });
 
     socket.emit("customEmit", "hello there (: ");
 
 });
 
-function sendGameToPlayers(client){
-    let index = players.map( player => player.id).indexOf(client.id);
-    if (index < 3)game.playerCards = players[index].hand;
-    return game;
+function startGame() {
+    deck = new deckI();
+
+    players.forEach((player, index) => {
+        player.hand = deck.deck.slice(8 * index, 8 * index + 8);
+    });
+
+    console.log(players);
+    allClients.forEach(client => {
+        client.emit("game", sendGameToPlayers(client))
+    });
+}
+
+function playCard(socket, data) {
+    if(!data) return;
+    
+    let index = players.map(player => player.id).indexOf(socket.id);
+    if(game.playerSlotTurn != players[index].slot) return;
+    
+    //TODO do stuff
+    console.log(data + "---played card");
+
+    let slot = game.playerSlotTurn;
+    if (slot == 0) game.cardSlots.cardSlot1 = data;
+    else if (slot == 1) game.cardSlots.cardSlot2 = data;
+    else if (slot == 2) game.cardSlots.cardSlot3 = data;
+    else if (slot == 3) game.cardSlots.cardSlot4 = data;
+
+    game.playerSlotTurn++;
+
+    allClients.forEach(client => {
+        client.emit("game", sendGameToPlayers(client))
+    });
+}
+
+function sendGameToPlayers(client) {
+    let individualGame = JSON.parse(JSON.stringify(game));
+    let index = players.map(player => player.id).indexOf(client.id);
+    if (index > 4) return;
+
+    individualGame.playerCards = players[index].hand;
+    individualGame.cardSlots = setCardSlotsDependingOnPlayerSlot(index, game.cardSlots);
+    return individualGame;
+}
+
+function setCardSlotsDependingOnPlayerSlot(playerSlot, cardSlots){
+    const CARD_SLOTS = 4;
+    let orderdCardSlots = {
+        cardSlot1: "",
+        cardSlot2: "",
+        cardSlot3: "",
+        cardSlot4: ""
+    };
+
+    if(playerSlot == 0) return cardSlots;
+    else{
+        for(let i = 0; i <= CARD_SLOTS; i++){
+            let slot = i+playerSlot;
+            if(slot > CARD_SLOTS) slot-=CARD_SLOTS;
+
+            orderdCardSlots[`cardSlot${i}`] = cardSlots[`cardSlot${slot}`];
+        }
+    }
+    
+    return orderdCardSlots;
 }
 
 app.get('/', (req, res) => {

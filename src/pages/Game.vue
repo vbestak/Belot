@@ -45,8 +45,7 @@ export default {
   },
     methods: {
         playCard(card){
-            this.$socket.client.emit('amejzing', "amejzing");
-            console.log(card + " --played card");
+            this.$socket.client.emit('playCard', card);
         }
     }
 }
@@ -90,7 +89,7 @@ export default {
 #game-container{
     display: grid;
     grid-template-rows: 1fr 4fr 1.5fr;
-    grid-template-columns: 1fr 120px 1fr 120px 1fr;
+    grid-template-columns: 1fr 120px 1.5fr 120px 1fr;
     grid-template-areas: 
     ". . player-3 score ."
     ". player-4 table player-2 ."
