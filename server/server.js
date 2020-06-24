@@ -20,6 +20,8 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+let cardI = require("./model/Card");
+let card = new cardI();
 let playerI = require("./model/Player");
 let gameI = require("./model/Game");
 let deckI = require("./model/Deck");
@@ -70,9 +72,25 @@ function startGame() {
     });
 
     console.log(players);
-    allClients.forEach(client => {
-        client.emit("game", sendGameToPlayers(client))
-    });
+    clearCardSlots();
+    sendGameToAllPlayers();
+}
+
+function updateScoreAndSetPlayerThrowingSlot(){
+    let biggest = game.cardSlots.cardSlot1;
+
+    for(let slot in game.cardSlots){
+        if(card.getScoreValue(game.cardSlots[slot]) > card.getScoreValue(biggest)) biggest =  game.cardSlots[slot];
+     }
+
+    console.log(`biggest = ${biggest}`);
+    game.playerSlotTurn = 0;
+}
+
+function clearCardSlots(){
+    for(let cardSlot in game.cardSlots){
+        game.cardSlots[cardSlot] = "";
+    }
 }
 
 function playCard(socket, data) {
@@ -81,6 +99,10 @@ function playCard(socket, data) {
     let index = players.map(player => player.id).indexOf(socket.id);
     if(game.playerSlotTurn != players[index].slot) return;
     
+    let cardIndex = players[index].hand.indexOf(data);
+    if(cardIndex < 0) return;
+    else players[index].hand.splice(cardIndex, 1);
+
     //TODO do stuff
     console.log(data + "---played card");
 
@@ -91,13 +113,34 @@ function playCard(socket, data) {
     else if (slot == 3) game.cardSlots.cardSlot4 = data;
 
     game.playerSlotTurn++;
+    if(game.playerSlotTurn>3) game.playerSlotTurn = 0;
 
+    sendGameToAllPlayers();
+
+    (function(){
+        let nextSlotFilled;
+        let nextSlot = slot++ >= 3 ? 0 : slot;
+        
+        if(game.cardSlots[`cardSlot${nextSlot+1}`]){
+            setTimeout(
+                function(){
+                    updateScoreAndSetPlayerThrowingSlot();
+                    clearCardSlots();
+                    sendGameToAllPlayers();
+                },
+                500
+            );
+        }
+    })()
+}
+
+function sendGameToAllPlayers(){
     allClients.forEach(client => {
-        client.emit("game", sendGameToPlayers(client))
+        client.emit("game", sendGameToPlayer(client))
     });
 }
 
-function sendGameToPlayers(client) {
+function sendGameToPlayer(client) {
     let individualGame = JSON.parse(JSON.stringify(game));
     let index = players.map(player => player.id).indexOf(client.id);
     if (index > 4) return;
@@ -130,7 +173,7 @@ function setCardSlotsDependingOnPlayerSlot(playerSlot, cardSlots){
 }
 
 app.get('/', (req, res) => {
-    res.send("welcome to belot made by valetnino beštak");
+    res.send("welcome to belot made by valentino beštak");
 });
 
 

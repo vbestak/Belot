@@ -1,8 +1,12 @@
 module.exports = {
     id: 0,
     score: { 
-        mi:0,
-        vi:0
+        mi: 0,
+        vi: 0,
+        total: {
+            mi:0,
+            vi:0
+        }
     },
     cardSlots: {
         cardSlot1: "",

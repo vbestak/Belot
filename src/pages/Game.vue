@@ -45,6 +45,7 @@ export default {
   },
     methods: {
         playCard(card){
+            console.log("played card" + card);
             this.$socket.client.emit('playCard', card);
         }
     }
