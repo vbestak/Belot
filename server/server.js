@@ -26,8 +26,8 @@ let playerI = require("./model/Player");
 let gameI = require("./model/Game");
 let deckI = require("./model/Deck");
 let players = [];
-let game, deck;
-game = gameI;
+let game = gameI,
+    deck;
 let allClients = [];
 const connectionsLimit = 4;
 
@@ -48,7 +48,9 @@ io.on('connect', function (socket) {
 
     if (players.length == 4) startGame();
 
-    socket.on('playCard', (data)=>{playCard(socket, data)});
+    socket.on('playCard', (data) => {
+        playCard(socket, data)
+    });
 
     socket.on('disconnect', function () {
         console.log('Got disconnect!');
@@ -76,31 +78,55 @@ function startGame() {
     sendGameToAllPlayers();
 }
 
-function updateScoreAndSetPlayerThrowingSlot(){
-    let biggest = game.cardSlots.cardSlot1;
+function updateScoreAndSetNextPlayer() {
+    let biggest = "";
+    let biggestSlot = "";
 
-    for(let slot in game.cardSlots){
-        if(card.getScoreValue(game.cardSlots[slot]) > card.getScoreValue(biggest)) biggest =  game.cardSlots[slot];
-     }
+    for (let slot in game.cardSlots) {
+        console.log(`biggest = ${biggest} at ${biggestSlot} - curr slot=${slot}`);
+        if ((biggest.slice(0, 1) != game.trump.slice(0, 1)) && 
+            (game.cardSlots[slot].slice(0, 1) == game.trump.slice(0, 1))){
+                biggest = game.cardSlots[slot];
+                biggestSlot = slot;
+        }
 
-    console.log(`biggest = ${biggest}`);
-    game.playerSlotTurn = 0;
+        else if (biggest.slice(0, 1) == game.trump.slice(0, 1))
+            if (game.cardSlots[slot].slice(0, 1) != game.trump.slice(0, 1)) continue;
+            else if (card.getScoreValue(addFlagIfTrumpCard(game.cardSlots[slot])) >
+                     card.getScoreValue(addFlagIfTrumpCard(biggest))) {
+                        biggest = game.cardSlots[slot];
+                        biggestSlot = slot;
+            }
+    }
+
+    console.log(`biggest = ${biggest} at ${biggestSlot}`);
+    game.playerSlotTurn = biggestSlot.slice(biggestSlot.length - 1, biggestSlot.length) - 1;
 }
 
-function clearCardSlots(){
-    for(let cardSlot in game.cardSlots){
+function addFlagIfTrumpCard(card) {
+    let trumpFlag = "Adut";
+    let trump = game.trump;
+
+    if ((card.slice(1, card.length) == "dečko") || (card.slice(1, card.length) == "devet"))
+        if (trump.slice(0, 1) == card.slice(0, 1)) return card + trumpFlag;
+
+    return card;
+}
+
+function clearCardSlots() {
+    for (let cardSlot in game.cardSlots) {
         game.cardSlots[cardSlot] = "";
     }
 }
 
 function playCard(socket, data) {
-    if(!data) return;
-    
+    if (!data) return;
+
     let index = players.map(player => player.id).indexOf(socket.id);
-    if(game.playerSlotTurn != players[index].slot) return;
-    
+    if (game.playerSlotTurn != players[index].slot) return;
+
     let cardIndex = players[index].hand.indexOf(data);
-    if(cardIndex < 0) return;
+    if (cardIndex < 0) return;
     else players[index].hand.splice(cardIndex, 1);
 
     //TODO do stuff
@@ -113,18 +139,18 @@ function playCard(socket, data) {
     else if (slot == 3) game.cardSlots.cardSlot4 = data;
 
     game.playerSlotTurn++;
-    if(game.playerSlotTurn>3) game.playerSlotTurn = 0;
+    if (game.playerSlotTurn > 3) game.playerSlotTurn = 0;
 
     sendGameToAllPlayers();
 
-    (function(){
+    (function () {
         let nextSlotFilled;
         let nextSlot = slot++ >= 3 ? 0 : slot;
-        
-        if(game.cardSlots[`cardSlot${nextSlot+1}`]){
+
+        if (game.cardSlots[`cardSlot${nextSlot+1}`]) {
             setTimeout(
-                function(){
-                    updateScoreAndSetPlayerThrowingSlot();
+                function () {
+                    updateScoreAndSetNextPlayer();
                     clearCardSlots();
                     sendGameToAllPlayers();
                 },
@@ -134,7 +160,7 @@ function playCard(socket, data) {
     })()
 }
 
-function sendGameToAllPlayers(){
+function sendGameToAllPlayers() {
     allClients.forEach(client => {
         client.emit("game", sendGameToPlayer(client))
     });
@@ -150,7 +176,7 @@ function sendGameToPlayer(client) {
     return individualGame;
 }
 
-function setCardSlotsDependingOnPlayerSlot(playerSlot, cardSlots){
+function setCardSlotsDependingOnPlayerSlot(playerSlot, cardSlots) {
     const CARD_SLOTS = 4;
     let orderdCardSlots = {
         cardSlot1: "",
@@ -159,16 +185,16 @@ function setCardSlotsDependingOnPlayerSlot(playerSlot, cardSlots){
         cardSlot4: ""
     };
 
-    if(playerSlot == 0) return cardSlots;
-    else{
-        for(let i = 0; i <= CARD_SLOTS; i++){
-            let slot = i+playerSlot;
-            if(slot > CARD_SLOTS) slot-=CARD_SLOTS;
+    if (playerSlot == 0) return cardSlots;
+    else {
+        for (let i = 0; i <= CARD_SLOTS; i++) {
+            let slot = i + playerSlot;
+            if (slot > CARD_SLOTS) slot -= CARD_SLOTS;
 
             orderdCardSlots[`cardSlot${i}`] = cardSlots[`cardSlot${slot}`];
         }
     }
-    
+
     return orderdCardSlots;
 }
 
