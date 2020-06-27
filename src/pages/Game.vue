@@ -8,10 +8,9 @@
             <Player style="margin: 0 12px 0 -62px;"/>
             <PlayerHand @play-card="playCard" :cards="game.playerCards" class="player-hand-slot"/>
         </div>
-        <Score id="score-slot"/>
+        <Score id="score-slot" :score="game.score" />
     </div>
 </template>
-
 
 <script>
 import Table from "@/components/Table.vue"

@@ -66,41 +66,65 @@ io.on('connect', function (socket) {
 
 });
 
-function startGame() {
-    deck = new deckI();
-
+function shuffleCards(){
     players.forEach((player, index) => {
         player.hand = deck.deck.slice(8 * index, 8 * index + 8);
     });
+}
 
-    console.log(players);
+function startGame() {
+    deck = new deckI();
+
+    shuffleCards();
     clearCardSlots();
     sendGameToAllPlayers();
 }
 
 function updateScoreAndSetNextPlayer() {
-    let biggest = "";
-    let biggestSlot = "";
+    let biggest = game.cardSlots.cardSlot1;
+    let biggestSlot = "cardSlot1";
+    let trumpInitial = game.trump.slice(0, 1);
+    let totalValue = 0;
 
     for (let slot in game.cardSlots) {
-        console.log(`biggest = ${biggest} at ${biggestSlot} - curr slot=${slot}`);
-        if ((biggest.slice(0, 1) != game.trump.slice(0, 1)) && 
-            (game.cardSlots[slot].slice(0, 1) == game.trump.slice(0, 1))){
-                biggest = game.cardSlots[slot];
+        let currentCard = game.cardSlots[slot];
+        let biggestCardValue = card.getScoreValue(addFlagIfTrumpCard(biggest)),
+            currentCardValue = card.getScoreValue(addFlagIfTrumpCard(currentCard));
+        
+        totalValue += currentCardValue;
+
+        if ((biggest.slice(0, 1) != trumpInitial) && 
+            (currentCard.slice(0, 1) == trumpInitial)){
+                biggest = currentCard;
                 biggestSlot = slot;
         }
-
-        else if (biggest.slice(0, 1) == game.trump.slice(0, 1))
-            if (game.cardSlots[slot].slice(0, 1) != game.trump.slice(0, 1)) continue;
-            else if (card.getScoreValue(addFlagIfTrumpCard(game.cardSlots[slot])) >
-                     card.getScoreValue(addFlagIfTrumpCard(biggest))) {
-                        biggest = game.cardSlots[slot];
-                        biggestSlot = slot;
-            }
+        else if (biggest.slice(0, 1) == trumpInitial)
+            if (currentCard.slice(0, 1) != trumpInitial) continue;
+            else if (currentCardValue > biggestCardValue) {
+                biggest = currentCard;
+                biggestSlot = slot;
+            }  
     }
 
-    console.log(`biggest = ${biggest} at ${biggestSlot}`);
-    game.playerSlotTurn = biggestSlot.slice(biggestSlot.length - 1, biggestSlot.length) - 1;
+    let playerCollected = biggestSlot.match(/\d/) - 1;
+    game.playerSlotTurn = playerCollected;
+
+    // eslint-disable-next-line no-constant-condition
+    if(playerCollected == 0 || 2){
+        game.score.mi += totalValue;
+    }else{
+        game.score.vi += totalValue;
+    }
+
+    if(checkIfHandsAreEmpty()){
+        shuffleCards();
+
+        game.playerSlotTurn = 0;
+    }    
+}
+
+function checkIfHandsAreEmpty(){
+    return players.map( player => player.hand).filter( hand => hand.length > 0).length == 0;
 }
 
 function addFlagIfTrumpCard(card) {
@@ -147,7 +171,7 @@ function playCard(socket, data) {
         let nextSlotFilled;
         let nextSlot = slot++ >= 3 ? 0 : slot;
 
-        if (game.cardSlots[`cardSlot${nextSlot+1}`]) {
+        if (game.cardSlots[`cardSlot${nextSlot+1}`] != "") {
             setTimeout(
                 function () {
                     updateScoreAndSetNextPlayer();

@@ -6,8 +6,8 @@
                 <td>Vi</td>
             </thead>
             <tr>
-                <td>0</td>
-                <td>0</td>
+                <td>{{ score.mi || "0"}}</td>
+                <td>{{ score.vi || "0"}}</td>
             </tr>
         </table>
     </div>
@@ -16,7 +16,9 @@
 
 <script>
 export default {
-
+    props: {
+        score: Object
+    }
 }
 </script>
 
