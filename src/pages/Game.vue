@@ -8,23 +8,27 @@
             <Player style="margin: 0 12px 0 -62px;"/>
             <PlayerHand @play-card="playCard" :cards="game.playerCards" class="player-hand-slot"/>
         </div>
+
+        <TrumpCall id="trump-call" :game="game" />
         <Score id="score-slot" :score="game.score" />
     </div>
 </template>
 
 <script>
-import Table from "@/components/Table.vue"
-import Player from "@/components/Player.vue"
-import Score from "@/components/Score.vue"
-import PlayerHand from "@/components/PlayerHand.vue"
-import Game from "../game-mock.js"
+import TrumpCall from "@/components/TrumpCall.vue";
+import Table from "@/components/Table.vue";
+import Player from "@/components/Player.vue";
+import Score from "@/components/Score.vue";
+import PlayerHand from "@/components/PlayerHand.vue";
+import Game from "../game-mock.js";
 
 export default {
     components:{
         Table,
         Player,
         Score,
-        PlayerHand
+        PlayerHand,
+        TrumpCall
     },
     data(){
         return {
@@ -53,6 +57,11 @@ export default {
 
 
 <style scoped>
+#trump-call{
+    grid-area: table;
+    align-self: center;
+    justify-self: center;
+}
 .player-hand-slot{
     width: fit-content;
 }

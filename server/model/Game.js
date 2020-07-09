@@ -16,6 +16,7 @@ module.exports = {
     },
     playerCards: [],
     trump: "h",
+    trumpCalling: true,
     playerSlotTurn: 0,
     playerSlotShuffling: 4
 }

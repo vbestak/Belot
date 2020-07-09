@@ -25,6 +25,7 @@ let card = new cardI();
 let playerI = require("./model/Player");
 let gameI = require("./model/Game");
 let deckI = require("./model/Deck");
+const { callbackify } = require('util');
 let players = [];
 let game = gameI,
     deck;
@@ -47,6 +48,14 @@ io.on('connect', function (socket) {
     players.push(new playerI(socket.id, "Anonymous", players.length));
 
     if (players.length == 4) startGame();
+
+    socket.on("trump-call", (data)=>{
+        this.gameI.trump = data.slice(0, 1)
+    });
+
+    socket.on("trump-call-next", ()=>{
+        this.gameI.calling += 1;
+    });
 
     socket.on('playCard', (data) => {
         playCard(socket, data)
@@ -77,7 +86,19 @@ function startGame() {
 
     shuffleCards();
     clearCardSlots();
+    resetScore();
     sendGameToAllPlayers();
+}
+
+function resetScore(){
+    game.score = { 
+        mi: 0,
+        vi: 0,
+        total: {
+            mi:0,
+            vi:0
+        }
+    }; 
 }
 
 function updateScoreAndSetNextPlayer() {

@@ -1,5 +1,5 @@
 export default {
-    id: 1,
+    id: 0,
     score: { 
         mi: 0,
         vi: 0,
@@ -14,9 +14,9 @@ export default {
         cardSlot3: "",
         cardSlot4: ""
     },
-    playerCards: ['hkralj', 'tas',
-    'ksedam', 'tdeset',
-    'pbaba',  'kosam',
-    'hosam'],
-    trump: "C"
+    playerCards: ["has"],
+    trump: "h",
+    trumpCalling: true,
+    playerSlotTurn: 0,
+    playerSlotShuffling: 4
 }
