@@ -16,7 +16,7 @@ export default {
     },
     playerCards: ["has"],
     trump: "h",
-    trumpCalling: true,
+    trumpCalling: false,
     playerSlotTurn: 0,
-    playerSlotShuffling: 4
+    playerSlotShuffling: 3
 }

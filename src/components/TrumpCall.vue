@@ -1,25 +1,28 @@
 <template>
   <div class="call-container">
       <div class="colors-container">
-        <div>
-            <img src="../../public/assets/boje/herc.png" alt="hrc">
+        <div @click="callTrump('herc')">
+            <img src="../../public/assets/boje/herc.png" alt="herc">
         </div>
       
-        <div>
+        <div @click="callTrump('kara')">
             <img src="../../public/assets/boje/kara.png" alt="kara">
         </div>
       
-        <div>
+        <div @click="callTrump('pik')">
           <img src="../../public/assets/boje/pik.png" alt="pik">
         </div>
 
-        <div>
+        <div @click="callTrump('tref')">
             <img src="../../public/assets/boje/tref.png" alt="tref">
         </div>
       </div>
       
       <div>
-          <button id="button-next">Dalje!</button>
+            <button id="button-next"
+                :style="{'display': this.displayNext()? '': 'none'}"
+                @click="nextPlayer()">
+            Dalje!</button>
       </div>
   </div>
 </template>
@@ -30,6 +33,18 @@ import Game from '../game-mock'
 export default {
     props:{
         game: Game
+    },methods:{
+        displayNext(){
+            return (this.game.playerSlotShuffling != this.game.playerSlotTurn) && 
+                    this.game.trumpCalling &&
+                    this.game.trump == "";
+        },
+        nextPlayer(){
+            this.$emit("next-player");
+        },
+        callTrump(trump){
+            this.$emit("call-trump", trump)
+        }
     }
 }
 </script>

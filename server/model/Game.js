@@ -1,5 +1,6 @@
 module.exports = {
     id: 0,
+    playerId: 0,
     score: { 
         mi: 0,
         vi: 0,

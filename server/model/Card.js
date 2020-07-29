@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 module.exports = class Card{
-    colors = ["hrc", "kara", "pik", "tref"];
+    colors = ["herc", "kara", "pik", "tref"];
     values = ["sedam", "osam", "devet", "deset", "dečko", "baba", "kralj", "as"];
     scoreValues = {
         "sedam":0,

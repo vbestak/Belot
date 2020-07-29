@@ -48,17 +48,17 @@ io.on('connect', function (socket) {
     players.push(new playerI(socket.id, "Anonymous", players.length));
 
     if (players.length == 4) startGame();
-
-    socket.on("trump-call", (data)=>{
-        this.gameI.trump = data.slice(0, 1)
-    });
-
-    socket.on("trump-call-next", ()=>{
-        this.gameI.calling += 1;
-    });
-
+    
     socket.on('playCard', (data) => {
         playCard(socket, data)
+    });
+    
+    socket.on('passTrumpCalling', passTrumpCalling);
+    
+    socket.on("call-trump", (data)=>{
+        game.trumpCalling = false;
+        game.trump = data.slice(0, 1);
+        sendGameToAllPlayers();
     });
 
     socket.on('disconnect', function () {
@@ -75,15 +75,29 @@ io.on('connect', function (socket) {
 
 });
 
+function passTrumpCalling(){
+    game.playerSlotTurn++;
+    sendGameToAllPlayers();
+}
+
 function shuffleCards(){
     players.forEach((player, index) => {
         player.hand = deck.deck.slice(8 * index, 8 * index + 8);
     });
 }
 
+
+function clearTrump(){
+    game.trump = "";
+    game.trumpCalling = true;
+}
+
 function startGame() {
     deck = new deckI();
+    game.playerSlotShuffling = 3;
+    game.playerSlotTurn = 0;
 
+    clearTrump();
     shuffleCards();
     clearCardSlots();
     resetScore();
@@ -139,9 +153,16 @@ function updateScoreAndSetNextPlayer() {
 
     if(checkIfHandsAreEmpty()){
         shuffleCards();
-
-        game.playerSlotTurn = 0;
+        setNewMatch()
     }    
+}
+
+function setNewMatch(){
+    game.playerSlotShuffling += 1;
+    if(game.playerSlotShuffling > 4) game.playerSlotShuffling = 0;
+
+    game.playerSlotTurn = game.playerSlotShuffling++;
+    if( game.playerSlotTurn > 4) game.playerSlotTurn = 0;
 }
 
 function checkIfHandsAreEmpty(){
@@ -216,9 +237,16 @@ function sendGameToPlayer(client) {
     let index = players.map(player => player.id).indexOf(client.id);
     if (index > 4) return;
 
+    individualGame.playerId = index;
     individualGame.playerCards = players[index].hand;
     individualGame.cardSlots = setCardSlotsDependingOnPlayerSlot(index, game.cardSlots);
+    individualGame.trumpCalling = setTrumpCallDependingOnPlayerSlot(index, game)
+    
     return individualGame;
+}
+
+function setTrumpCallDependingOnPlayerSlot(index, game){
+    if(game.trumpCalling) return (index == game.playerSlotTurn) ? true : false;
 }
 
 function setCardSlotsDependingOnPlayerSlot(playerSlot, cardSlots) {

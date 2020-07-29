@@ -9,7 +9,11 @@
             <PlayerHand @play-card="playCard" :cards="game.playerCards" class="player-hand-slot"/>
         </div>
 
-        <TrumpCall id="trump-call" :game="game" />
+        <TrumpCall id="trump-call" 
+            :game="game" 
+            :style="{'visibility': game.trumpCalling ? 'visible': 'hidden'}"
+            @next-player="passTrumpCalling()" 
+            @call-trump="callTrump" />
         <Score id="score-slot" :score="game.score" />
     </div>
 </template>
@@ -40,16 +44,22 @@ export default {
         },
         customEmit(val) {
             console.log(val + 'this method was fired by the socket server. eg: io.emit("customEmit", data)')
-         },
-         game(val) {
-           this.game = val;
-           console.log(val);
-         }
+        },
+        game(val) {
+            this.game = val;
+            console.log(val);
+        }
   },
     methods: {
         playCard(card){
             console.log("played card" + card);
             this.$socket.client.emit('playCard', card);
+        },
+        passTrumpCalling(){
+            this.$socket.client.emit('passTrumpCalling');
+        },
+        callTrump(trump){
+            this.$socket.client.emit('call-trump', trump)
         }
     }
 }
