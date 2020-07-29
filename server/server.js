@@ -25,7 +25,9 @@ let card = new cardI();
 let playerI = require("./model/Player");
 let gameI = require("./model/Game");
 let deckI = require("./model/Deck");
-const { callbackify } = require('util');
+const {
+    callbackify
+} = require('util');
 let players = [];
 let game = gameI,
     deck;
@@ -48,16 +50,18 @@ io.on('connect', function (socket) {
     players.push(new playerI(socket.id, "Anonymous", players.length));
 
     if (players.length == 4) startGame();
-    
+
     socket.on('playCard', (data) => {
         playCard(socket, data)
     });
-    
+
     socket.on('passTrumpCalling', passTrumpCalling);
-    
-    socket.on("call-trump", (data)=>{
+
+    socket.on("call-trump", (data) => {
         game.trumpCalling = false;
         game.trump = data.slice(0, 1);
+        game.playerSlotTurn++;
+        if (game.playerSlotTurn > 3) game.playerSlotTurn = 0;
         sendGameToAllPlayers();
     });
 
@@ -75,19 +79,19 @@ io.on('connect', function (socket) {
 
 });
 
-function passTrumpCalling(){
+function passTrumpCalling() {
     game.playerSlotTurn++;
     sendGameToAllPlayers();
 }
 
-function shuffleCards(){
+function shuffleCards() {
     players.forEach((player, index) => {
         player.hand = deck.deck.slice(8 * index, 8 * index + 8);
     });
 }
 
 
-function clearTrump(){
+function clearTrump() {
     game.trump = "";
     game.trumpCalling = true;
 }
@@ -104,15 +108,15 @@ function startGame() {
     sendGameToAllPlayers();
 }
 
-function resetScore(){
-    game.score = { 
+function resetScore() {
+    game.score = {
         mi: 0,
         vi: 0,
         total: {
-            mi:0,
-            vi:0
+            mi: 0,
+            vi: 0
         }
-    }; 
+    };
 }
 
 function updateScoreAndSetNextPlayer() {
@@ -125,48 +129,49 @@ function updateScoreAndSetNextPlayer() {
         let currentCard = game.cardSlots[slot];
         let biggestCardValue = card.getScoreValue(addFlagIfTrumpCard(biggest)),
             currentCardValue = card.getScoreValue(addFlagIfTrumpCard(currentCard));
-        
+
         totalValue += currentCardValue;
 
-        if ((biggest.slice(0, 1) != trumpInitial) && 
-            (currentCard.slice(0, 1) == trumpInitial)){
-                biggest = currentCard;
-                biggestSlot = slot;
-        }
-        else if (biggest.slice(0, 1) == trumpInitial)
+        if ((biggest.slice(0, 1) != trumpInitial) &&
+            (currentCard.slice(0, 1) == trumpInitial)) {
+            biggest = currentCard;
+            biggestSlot = slot;
+        } else if (biggest.slice(0, 1) == trumpInitial)
             if (currentCard.slice(0, 1) != trumpInitial) continue;
             else if (currentCardValue > biggestCardValue) {
-                biggest = currentCard;
-                biggestSlot = slot;
-            }  
+            biggest = currentCard;
+            biggestSlot = slot;
+        }
     }
 
     let playerCollected = biggestSlot.match(/\d/) - 1;
     game.playerSlotTurn = playerCollected;
 
     // eslint-disable-next-line no-constant-condition
-    if(playerCollected == 0 || 2){
+    if (playerCollected == 0 || 2) {
         game.score.mi += totalValue;
-    }else{
+    } else {
         game.score.vi += totalValue;
     }
 
-    if(checkIfHandsAreEmpty()){
+    if (checkIfHandsAreEmpty()) {
         shuffleCards();
         setNewMatch()
-    }    
+    }
 }
 
-function setNewMatch(){
+function setNewMatch() {
     game.playerSlotShuffling += 1;
-    if(game.playerSlotShuffling > 4) game.playerSlotShuffling = 0;
+    if (game.playerSlotShuffling > 4) game.playerSlotShuffling = 0;
 
     game.playerSlotTurn = game.playerSlotShuffling++;
-    if( game.playerSlotTurn > 4) game.playerSlotTurn = 0;
+    if (game.playerSlotTurn > 4) game.playerSlotTurn = 0;
+
+    clearTrump();
 }
 
-function checkIfHandsAreEmpty(){
-    return players.map( player => player.hand).filter( hand => hand.length > 0).length == 0;
+function checkIfHandsAreEmpty() {
+    return players.map(player => player.hand).filter(hand => hand.length > 0).length == 0;
 }
 
 function addFlagIfTrumpCard(card) {
@@ -235,18 +240,27 @@ function sendGameToAllPlayers() {
 function sendGameToPlayer(client) {
     let individualGame = JSON.parse(JSON.stringify(game));
     let index = players.map(player => player.id).indexOf(client.id);
-    if (index > 4) return;
+    if (index > 4 || index == -1) return;
+
+    console.log(index + " ---index");
+    console.log(JSON.stringify(players[index]) + " ---playersindex");
 
     individualGame.playerId = index;
     individualGame.playerCards = players[index].hand;
     individualGame.cardSlots = setCardSlotsDependingOnPlayerSlot(index, game.cardSlots);
     individualGame.trumpCalling = setTrumpCallDependingOnPlayerSlot(index, game)
-    
+
+    if(game.trumpCalling){
+        individualGame.playerCards = JSON.parse(JSON.stringify(individualGame.playerCards));
+        individualGame.playerCards[6] = "cardBack";
+        individualGame.playerCards[7] = "cardBack";
+    }
+
     return individualGame;
 }
 
-function setTrumpCallDependingOnPlayerSlot(index, game){
-    if(game.trumpCalling) return (index == game.playerSlotTurn) ? true : false;
+function setTrumpCallDependingOnPlayerSlot(index, game) {
+    if (game.trumpCalling) return (index == game.playerSlotTurn) ? true : false;
 }
 
 function setCardSlotsDependingOnPlayerSlot(playerSlot, cardSlots) {
