@@ -14,6 +14,7 @@ export default {
         cardSlot3: "",
         cardSlot4: ""
     },
+    playerNames: ["1", "2", "3", "4"],
     playerCards: ["has"],
     trump: "h",
     trumpCalling: false,

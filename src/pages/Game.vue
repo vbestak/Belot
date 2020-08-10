@@ -1,11 +1,11 @@
 <template>
     <div id="game-container">
         <Table :playedCards="game.cardSlots" id="table-slot" />
-        <Player id="player-4" class="player" />
-        <Player id="player-3" class="player" />
-        <Player id="player-2" class="player" />
+        <Player id="player-4" class="player" :player="game.playerNames[3]" />
+        <Player id="player-3" class="player" :player="game.playerNames[2]" />
+        <Player id="player-2" class="player" :player="game.playerNames[1]" />
         <div id="player-1" class="player">
-            <Player style="margin: 0 12px 0 -62px;"/>
+            <Player style="margin: 0 12px 0 -62px;" :player="game.playerNames[0]" />
             <PlayerHand @play-card="playCard" :cards="game.playerCards" class="player-hand-slot"/>
         </div>
 

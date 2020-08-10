@@ -47,7 +47,7 @@ io.on('connect', function (socket) {
     }
 
     allClients.push(socket);
-    players.push(new playerI(socket.id, "Anonymous", players.length));
+    players.push(new playerI(socket.id, "Anonymous"));
 
     if (players.length == 4) startGame();
 
@@ -97,6 +97,11 @@ function clearTrump() {
 }
 
 function startGame() {
+
+    for (let i = 0; i < 4; i++) {
+        players[i].slot = i;
+    }
+
     deck = new deckI();
     game.playerSlotShuffling = 3;
     game.playerSlotTurn = 0;
@@ -249,6 +254,7 @@ function sendGameToPlayer(client) {
     individualGame.playerCards = players[index].hand;
     individualGame.cardSlots = setCardSlotsDependingOnPlayerSlot(index, game.cardSlots);
     individualGame.trumpCalling = setTrumpCallDependingOnPlayerSlot(index, game)
+    individualGame.playerNames = setPlayerNamesDependingOnPlayerSlot(index, game.playerNames);
 
     if(game.trumpCalling){
         individualGame.playerCards = JSON.parse(JSON.stringify(individualGame.playerCards));
@@ -257,6 +263,17 @@ function sendGameToPlayer(client) {
     }
 
     return individualGame;
+}
+
+function setPlayerNamesDependingOnPlayerSlot(index, playerNames){
+    let orderedPlayerNames = [];
+    if(index == 0) return playerNames;
+
+    else{
+        orderedPlayerNames = orderedPlayerNames.concat(playerNames.slice(index));
+        orderedPlayerNames = orderedPlayerNames.concat(playerNames.slice(0, index));
+        return orderedPlayerNames;
+    }
 }
 
 function setTrumpCallDependingOnPlayerSlot(index, game) {

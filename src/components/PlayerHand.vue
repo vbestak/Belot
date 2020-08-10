@@ -43,6 +43,6 @@ export default {
 }
 #hand-container > * {
     display: inline-block;
-    padding: .5px;
+    padding: 2px;
 }
 </style>

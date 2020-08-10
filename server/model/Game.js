@@ -15,6 +15,7 @@ module.exports = {
         cardSlot3: "",
         cardSlot4: ""
     },
+    playerNames: ["1", "2", "3", "4"],
     playerCards: [],
     trump: "h",
     trumpCalling: true,
