@@ -71,7 +71,7 @@ io.on('connect', function (socket) {
         var i = allClients.indexOf(socket);
         allClients.splice(i, 1);
 
-        i = players.map(player => player.id).indexOf(socket.playerId);
+        i = players.findIndex(player =>  player.id == socket.id);
         players.splice(i, 1);
     });
 
@@ -206,7 +206,6 @@ function playCard(socket, data) {
     else players[index].hand.splice(cardIndex, 1);
 
     //TODO do stuff
-    console.log(data + "---played card");
 
     let slot = game.playerSlotTurn;
     if (slot == 0) game.cardSlots.cardSlot1 = data;
@@ -246,9 +245,6 @@ function sendGameToPlayer(client) {
     let individualGame = JSON.parse(JSON.stringify(game));
     let index = players.map(player => player.id).indexOf(client.id);
     if (index > 4 || index == -1) return;
-
-    console.log(index + " ---index");
-    console.log(JSON.stringify(players[index]) + " ---playersindex");
 
     individualGame.playerId = index;
     individualGame.playerCards = players[index].hand;

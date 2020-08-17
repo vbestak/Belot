@@ -107,8 +107,8 @@ export default {
 }
 #game-container{
     display: grid;
-    grid-template-rows: 1fr 4fr 1.5fr;
-    grid-template-columns: 1fr 120px 1.5fr 120px 1fr;
+    grid-template-rows: 1fr auto 1.5fr;
+    grid-template-columns: 1fr 120px auto 120px 1fr;
     grid-template-areas: 
     ". . player-3 score ."
     ". player-4 table player-2 ."
