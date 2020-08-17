@@ -60,7 +60,7 @@ io.on('connect', function (socket) {
     socket.on("call-trump", (data) => {
         game.trumpCalling = false;
         game.trump = data.slice(0, 1);
-        game.playerSlotTurn == game.playerSlotShuffling++;
+        game.playerSlotTurn = game.playerSlotShuffling+1;
         if (game.playerSlotTurn > 3) game.playerSlotTurn = 0;
         sendGameToAllPlayers();
     });

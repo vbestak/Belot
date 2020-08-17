@@ -20,5 +20,5 @@ module.exports = {
     trump: "h",
     trumpCalling: true,
     playerSlotTurn: 0,
-    playerSlotShuffling: 4
+    playerSlotShuffling: 3
 }

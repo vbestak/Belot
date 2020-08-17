@@ -21,7 +21,7 @@
 export default {
   props:{
       player: Object,
-      playerSlotShuffling: String
+      playerSlotShuffling: Number
   },
   computed:{
       playerName: function(){
