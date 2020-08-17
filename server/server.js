@@ -60,7 +60,7 @@ io.on('connect', function (socket) {
     socket.on("call-trump", (data) => {
         game.trumpCalling = false;
         game.trump = data.slice(0, 1);
-        game.playerSlotTurn++;
+        game.playerSlotTurn == game.playerSlotShuffling++;
         if (game.playerSlotTurn > 3) game.playerSlotTurn = 0;
         sendGameToAllPlayers();
     });
@@ -105,6 +105,10 @@ function startGame() {
     deck = new deckI();
     game.playerSlotShuffling = 3;
     game.playerSlotTurn = 0;
+
+    let cleanedPlayers = JSON.parse(JSON.stringify(players));
+    cleanedPlayers.forEach( player => delete player.hand);
+    game.players = cleanedPlayers;
 
     clearTrump();
     shuffleCards();
@@ -250,7 +254,7 @@ function sendGameToPlayer(client) {
     individualGame.playerCards = players[index].hand;
     individualGame.cardSlots = setCardSlotsDependingOnPlayerSlot(index, game.cardSlots);
     individualGame.trumpCalling = setTrumpCallDependingOnPlayerSlot(index, game)
-    individualGame.playerNames = setPlayerNamesDependingOnPlayerSlot(index, game.playerNames);
+    individualGame.players = setPlayerNamesDependingOnPlayerSlot(index, game.players);
 
     if(game.trumpCalling){
         individualGame.playerCards = JSON.parse(JSON.stringify(individualGame.playerCards));
@@ -261,14 +265,14 @@ function sendGameToPlayer(client) {
     return individualGame;
 }
 
-function setPlayerNamesDependingOnPlayerSlot(index, playerNames){
-    let orderedPlayerNames = [];
-    if(index == 0) return playerNames;
+function setPlayerNamesDependingOnPlayerSlot(index, players){
+    let orderedPlayers = [];
+    if(index == 0) return players;
 
     else{
-        orderedPlayerNames = orderedPlayerNames.concat(playerNames.slice(index));
-        orderedPlayerNames = orderedPlayerNames.concat(playerNames.slice(0, index));
-        return orderedPlayerNames;
+        orderedPlayers = orderedPlayers.concat(players.slice(index));
+        orderedPlayers = orderedPlayers.concat(players.slice(0, index));
+        return orderedPlayers;
     }
 }
 
