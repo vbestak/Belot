@@ -18,6 +18,7 @@ module.exports = {
     players: [{slot:"0"}, {slot:"1"}, {slot:"2"}, {slot:"3"}],
     playerCards: [],
     trump: "h",
+    playerCalled:"",
     trumpCalling: true,
     playerSlotTurn: 0,
     playerSlotShuffling: 3

@@ -1,5 +1,6 @@
 <template>
     <div id="game-container">
+        <TrumpInfo :trump="game.trump" :playerCalled="game.playerCalled" />
         <Table :playedCards="game.cardSlots" id="table-slot" />
         <Player id="player-4" class="player" :player="game.players[3]" :playerSlotShuffling="game.playerSlotShuffling"/>
         <Player id="player-3" class="player" :player="game.players[2]" :playerSlotShuffling="game.playerSlotShuffling"/>
@@ -19,6 +20,7 @@
 </template>
 
 <script>
+import TrumpInfo from "@/components/TrumpInfo.vue";
 import TrumpCall from "@/components/TrumpCall.vue";
 import Table from "@/components/Table.vue";
 import Player from "@/components/Player.vue";
@@ -32,7 +34,9 @@ export default {
         Player,
         Score,
         PlayerHand,
-        TrumpCall
+        TrumpCall,
+        TrumpInfo
+        
     },
     data(){
         return {
