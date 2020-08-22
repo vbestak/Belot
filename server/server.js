@@ -135,6 +135,10 @@ function updateScoreAndSetNextPlayer() {
     let trumpInitial = game.trump.slice(0, 1);
     let totalValue = 0;
 
+    if (checkIfHandsAreEmpty()) {
+        totalValue += 10;
+     }
+     
     for (let slot in game.cardSlots) {
         let currentCard = game.cardSlots[slot];
         let biggestCardValue = card.getScoreValue(addFlagIfTrumpCard(biggest)),
@@ -157,8 +161,8 @@ function updateScoreAndSetNextPlayer() {
     let playerCollected = biggestSlot.match(/\d/) - 1;
     game.playerSlotTurn = playerCollected;
 
-    // eslint-disable-next-line no-constant-condition
-    if (playerCollected == 0 || 2) {
+
+    if (playerCollected == 0 || playerCollected == 2) {
         game.score.mi += totalValue;
     } else {
         game.score.vi += totalValue;
