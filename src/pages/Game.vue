@@ -1,6 +1,6 @@
 <template>
     <div id="game-container">
-        <TrumpInfo :trump="game.trump" :playerCalled="game.playerCalled" />
+        <TrumpInfo id="trump-info-container" :trump="game.trump" :playerCalled="game.playerCalled" />
         <Table :playedCards="game.cardSlots" id="table-slot" />
         <Player id="player-4" class="player" :player="game.players[3]" :playerSlotShuffling="game.playerSlotShuffling"/>
         <Player id="player-3" class="player" :player="game.players[2]" :playerSlotShuffling="game.playerSlotShuffling"/>
@@ -71,6 +71,13 @@ export default {
 
 
 <style scoped>
+#trump-info-container{
+    grid-area: trump-info;
+    align-self: flex-start;
+    justify-self: start;
+    width: 100%;
+    height: 100%;
+}
 #trump-call{
     grid-area: table;
     align-self: center;
@@ -114,7 +121,7 @@ export default {
     grid-template-rows: 1fr auto 1.5fr;
     grid-template-columns: 1fr 120px auto 120px 1fr;
     grid-template-areas: 
-    ". . player-3 score ."
+    ". trump-info player-3 score ."
     ". player-4 table player-2 ."
     ". . player-1 . .";
 }
