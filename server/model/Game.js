@@ -21,5 +21,6 @@ module.exports = {
     playerCalled:"",
     trumpCalling: true,
     playerSlotTurn: 0,
+    playerSlotStarting: 0,
     playerSlotShuffling: 3
 }

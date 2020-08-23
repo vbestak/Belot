@@ -153,6 +153,9 @@ function updateScoreAndSetNextPlayer() {
 
         totalValue += currentCardValue;
 
+        if( (game.cardSlots[`cardSlot${game.playerSlotStarting+1}`].slice(0, 1) != game.cardSlots[slot].slice(0, 1))
+            && (game.cardSlots[slot].slice(0, 1) != trumpInitial)) continue; 
+
         if (biggest.slice(0, 1) != trumpInitial) {
             if(currentCard.slice(0, 1) == trumpInitial) {
                 biggest = currentCard;
@@ -165,13 +168,11 @@ function updateScoreAndSetNextPlayer() {
             else {
                 evaluateCards(currentCardValue,biggestCardValue)
             }
-
-        console.log(`biggest card value: ${biggestCardValue}/${biggest} currentCardValue: ${currentCardValue}/${currentCard}`);    
     }
     
     let playerCollected = biggestSlot.match(/\d/) - 1;
     game.playerSlotTurn = playerCollected;
-
+    game.playerSlotStarting = playerCollected;
 
     if (playerCollected == 0 || playerCollected == 2) {
         game.score.mi += totalValue;
@@ -192,6 +193,7 @@ function setNewMatch() {
     game.playerSlotTurn = game.playerSlotShuffling++;
     if (game.playerSlotTurn > 4) game.playerSlotTurn = 0;
 
+    game.playerSlotStarting = game.playerSlotTurn;
     clearTrump();
 }
 
