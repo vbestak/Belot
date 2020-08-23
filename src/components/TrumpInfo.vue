@@ -1,7 +1,7 @@
 <template>
   <div id="trumpinfo-container" v-if="trump">
       <div>
-        <img :src="'/assets/boje/'+trumpName(trump)+'.png'" alt="adut" width="65%">
+        <img :src="'/assets/boje/'+trumpName(trump)+'.png'" alt="adut" width="50%">
       </div>
       <div>
           Zvao: {{ playerCalled.name }}

@@ -17,6 +17,7 @@ export default {
     players: [{slot:"0"}, {slot:"1"}, {slot:"2"}, {slot:"3"}],
     playerCards: ["has"],
     trump: "h",
+    playerCalled:{},
     trumpCalling: false,
     playerSlotTurn: 0,
     playerSlotShuffling: 3

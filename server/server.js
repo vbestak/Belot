@@ -181,16 +181,36 @@ function updateScoreAndSetNextPlayer() {
     }
 
     if (checkIfHandsAreEmpty()) {
+        calculateTotalScore();
         shuffleCards();
         setNewMatch()
     }
 }
 
+function calculateTotalScore(){
+    if(game.playerCalled.slot == 0 || game.playerCalled.slot == 2){
+        if(game.score.mi > game.score.vi){
+            game.score.total.mi += game.score.mi;
+            game.score.total.vi += game.score.vi;
+        }else{
+            game.score.total.vi += game.score.vi + game.score.mi;
+        }
+    }else{
+        if(game.score.vi > game.score.mi){
+            game.score.total.vi += game.score.vi;
+            game.score.total.mi += game.score.mi;
+        }else{
+            game.score.total.mi += game.score.vi + game.score.mi;
+        }
+    }
+
+}
+
 function setNewMatch() {
     game.playerSlotShuffling += 1;
-    if (game.playerSlotShuffling > 4) game.playerSlotShuffling = 0;
+    if (game.playerSlotShuffling >= 4) game.playerSlotShuffling = 0;
 
-    game.playerSlotTurn = game.playerSlotShuffling++;
+    game.playerSlotTurn = game.playerSlotShuffling+1;
     if (game.playerSlotTurn > 4) game.playerSlotTurn = 0;
 
     game.playerSlotStarting = game.playerSlotTurn;
