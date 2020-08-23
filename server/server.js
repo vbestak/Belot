@@ -144,20 +144,31 @@ function updateScoreAndSetNextPlayer() {
         let biggestCardValue = card.getScoreValue(addFlagIfTrumpCard(biggest)),
             currentCardValue = card.getScoreValue(addFlagIfTrumpCard(currentCard));
 
+        let evaluateCards = (currentCardValue, biggestCardValue) => {
+            if (currentCardValue > biggestCardValue) {
+                biggest = currentCard;
+                biggestSlot = slot;
+            }
+        }
+
         totalValue += currentCardValue;
 
-        if ((biggest.slice(0, 1) != trumpInitial) &&
-            (currentCard.slice(0, 1) == trumpInitial)) {
-            biggest = currentCard;
-            biggestSlot = slot;
+        if (biggest.slice(0, 1) != trumpInitial) {
+            if(currentCard.slice(0, 1) == trumpInitial) {
+                biggest = currentCard;
+                biggestSlot = slot;
+            } else {
+                evaluateCards(currentCardValue,biggestCardValue)
+            }
         } else if (biggest.slice(0, 1) == trumpInitial)
             if (currentCard.slice(0, 1) != trumpInitial) continue;
-            else if (currentCardValue > biggestCardValue) {
-            biggest = currentCard;
-            biggestSlot = slot;
-        }
-    }
+            else {
+                evaluateCards(currentCardValue,biggestCardValue)
+            }
 
+        console.log(`biggest card value: ${biggestCardValue}/${biggest} currentCardValue: ${currentCardValue}/${currentCard}`);    
+    }
+    
     let playerCollected = biggestSlot.match(/\d/) - 1;
     game.playerSlotTurn = playerCollected;
 
