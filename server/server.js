@@ -240,6 +240,12 @@ function clearCardSlots() {
 function playCard(socket, data) {
     if (!data) return;
 
+    ///Check if card turn valid
+    //check if card foolows color
+    //check if player has stronger card
+    //if player doesnt have  card color check if he has trump
+    // if no trump valid
+
     let index = players.map(player => player.id).indexOf(socket.id);
     if (game.playerSlotTurn != players[index].slot) return;
 
@@ -247,14 +253,9 @@ function playCard(socket, data) {
     if (cardIndex < 0) return;
     else players[index].hand.splice(cardIndex, 1);
 
-    //TODO do stuff
-
     let slot = game.playerSlotTurn;
-    if (slot == 0) game.cardSlots.cardSlot1 = data;
-    else if (slot == 1) game.cardSlots.cardSlot2 = data;
-    else if (slot == 2) game.cardSlots.cardSlot3 = data;
-    else if (slot == 3) game.cardSlots.cardSlot4 = data;
-
+    game.cardSlots[`cardSlot${slot+1}`] = data
+    
     game.playerSlotTurn++;
     if (game.playerSlotTurn > 3) game.playerSlotTurn = 0;
 
