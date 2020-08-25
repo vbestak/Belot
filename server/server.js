@@ -250,8 +250,48 @@ function playCard(socket, data) {
     if (game.playerSlotTurn != players[index].slot) return;
 
     let cardIndex = players[index].hand.indexOf(data);
-    if (cardIndex < 0) return;
-    else players[index].hand.splice(cardIndex, 1);
+    if (cardIndex >= 0) {
+        
+        if(game.playerSlotStarting != game.playerSlotTurn){
+            let hasColorFlag = false;
+            let startingCard = game.cardSlots[`cardSlot${game.playerSlotStarting+1}`];
+            
+            if(data.slice(0, 1) == startingCard.slice(0, 1)){
+                let startingCardValue = card.getScoreValue(addFlagIfTrumpCard(startingCard));
+                let currentCardValue = card.getScoreValue(addFlagIfTrumpCard(data));
+                if(currentCardValue < startingCardValue){
+
+                    //check if player has stronger card if he does card is invalid
+                    for (const pcard of players[index].hand) {
+                        if(startingCard.slice(0, 1) == pcard.slice(0, 1)){
+                            hasColorFlag = true;
+                            if( card.getScoreValue(addFlagIfTrumpCard(pcard)) > startingCardValue ) return;
+                        }
+                    }
+                }
+
+            }else if(data.slice(0, 1) != startingCard.slice(0, 1)){
+                //check if player has color    
+                for (const pcard of players[index].hand) {
+                    if(startingCard.slice(0, 1) == pcard.slice(0, 1)){
+                        if(startingCard.slice(0, 1) == pcard.slice(0, 1)) return;
+                    }
+                }
+
+            }else if(!hasColorFlag){
+                //if player doesnt have  card color check if he has trump or if he threw trump
+                if(data.slice(0, 1) != game.trump)
+                for (const pcard of players[index].hand) {
+                    if(card.slice(0, 1) == game.trump) return
+                }
+            }
+            // if no trump any card is valid
+        }
+
+
+
+        players[index].hand.splice(cardIndex, 1);
+    }else return;
 
     let slot = game.playerSlotTurn;
     game.cardSlots[`cardSlot${slot+1}`] = data
