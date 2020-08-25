@@ -82,10 +82,12 @@ io.on('connect', function (socket) {
 
 function passTrumpCalling() {
     game.playerSlotTurn++;
+    if (game.playerSlotTurn > 3) game.playerSlotTurn = 0;
     sendGameToAllPlayers();
 }
 
 function shuffleCards() {
+    deck.shuffleDeck();
     players.forEach((player, index) => {
         player.hand = deck.deck.slice(8 * index, 8 * index + 8);
     });
@@ -204,6 +206,7 @@ function calculateTotalScore(){
         }
     }
 
+    game.score.mi = game.score.vi = 0;
 }
 
 function setNewMatch() {
@@ -239,12 +242,6 @@ function clearCardSlots() {
 
 function playCard(socket, data) {
     if (!data) return;
-
-    ///Check if card turn valid
-    //check if card foolows color
-    //check if player has stronger card
-    //if player doesnt have  card color check if he has trump
-    // if no trump valid
 
     let index = players.map(player => player.id).indexOf(socket.id);
     if (game.playerSlotTurn != players[index].slot) return;
@@ -349,8 +346,7 @@ function setPlayerNamesDependingOnPlayerSlot(index, players){
     if(index == 0) return players;
 
     else{
-        orderedPlayers = orderedPlayers.concat(players.slice(index));
-        orderedPlayers = orderedPlayers.concat(players.slice(0, index));
+        orderedPlayers = orderedPlayers.concat(players.slice(index), players.slice(0, index));
         return orderedPlayers;
     }
 }
@@ -361,12 +357,7 @@ function setTrumpCallDependingOnPlayerSlot(index, game) {
 
 function setCardSlotsDependingOnPlayerSlot(playerSlot, cardSlots) {
     const CARD_SLOTS = 4;
-    let orderdCardSlots = {
-        cardSlot1: "",
-        cardSlot2: "",
-        cardSlot3: "",
-        cardSlot4: ""
-    };
+    let orderdCardSlots = {};
 
     if (playerSlot == 0) return cardSlots;
     else {
